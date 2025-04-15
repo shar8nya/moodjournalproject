@@ -1,0 +1,308 @@
+:root {
+    /* Pastel color palette */
+    --pastel-pink: #ffcad4;
+    --pastel-pink-light: #fff0f3;
+    --pastel-pink-dark: #f7aeb9;
+    
+    --pastel-blue: #b8e0ff;
+    --pastel-blue-light: #e6f4ff;
+    --pastel-blue-dark: #91cbff;
+    
+    --pastel-lavender: #d9c6ff;
+    --pastel-lavender-light: #f0e8ff;
+    --pastel-lavender-dark: #c2a9ff;
+    
+    --pastel-mint: #c1ffd7;
+    --pastel-mint-light: #e8fff0;
+    --pastel-mint-dark: #a0f0c0;
+    
+    --pastel-yellow: #fff5ba;
+    --pastel-yellow-light: #fffce8;
+    --pastel-yellow-dark: #ffed91;
+    
+    /* Mood colors */
+    --mood-happy: #ffed91;     /* Yellow */
+    --mood-excited: #ffcad4;   /* Pink */
+    --mood-calm: #c1ffd7;      /* Mint */
+    --mood-neutral: #e6f4ff;   /* Light Blue */
+    --mood-tired: #d9c6ff;     /* Lavender */
+    --mood-anxious: #d1d1d1;   /* Gray */
+    --mood-sad: #b8e0ff;       /* Blue */
+    --mood-angry: #ffb3a8;     /* Coral */
+    
+    /* Text and UI colors */
+    --text-dark: #484848;
+    --text-medium: #6c757d;
+    --text-light: #a0a0a0;
+    --border-color: #e0e0e0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-dark);
+    background-color: var(--pastel-blue-light);
+    line-height: 1.6;
+}
+
+.navbar {
+    background-color: var(--pastel-lavender-light);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: var(--text-medium);
+    font-weight: 500;
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link.active {
+    color: var(--text-dark);
+}
+
+.card {
+    border: none;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: transparent;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--pastel-lavender-dark);
+    border-color: var(--pastel-lavender-dark);
+    color: var(--text-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--pastel-lavender);
+    border-color: var(--pastel-lavender);
+    color: var(--text-dark);
+}
+
+.btn-outline-primary {
+    color: var(--pastel-lavender-dark);
+    border-color: var(--pastel-lavender-dark);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--pastel-lavender);
+    border-color: var(--pastel-lavender);
+    color: var(--text-dark);
+}
+
+.btn-outline-secondary {
+    color: var(--text-medium);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--pastel-blue-light);
+    border-color: var(--pastel-blue-light);
+    color: var(--text-dark);
+}
+
+.form-control:focus {
+    border-color: var(--pastel-lavender);
+    box-shadow: 0 0 0 0.25rem rgba(217, 198, 255, 0.25);
+}
+
+/* Mood indicators */
+.mood-indicator {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mood-indicator-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mood-icon {
+    font-size: 32px;
+    color: var(--text-dark);
+}
+
+.mood-icon-sm {
+    font-size: 20px;
+    color: var(--text-dark);
+}
+
+.mood-text-sm {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+/* Mood colors */
+.mood-happy {
+    background-color: var(--mood-happy);
+}
+
+.mood-excited {
+    background-color: var(--mood-excited);
+}
+
+.mood-calm {
+    background-color: var(--mood-calm);
+}
+
+.mood-neutral {
+    background-color: var(--mood-neutral);
+}
+
+.mood-tired {
+    background-color: var(--mood-tired);
+}
+
+.mood-anxious {
+    background-color: var(--mood-anxious);
+}
+
+.mood-sad {
+    background-color: var(--mood-sad);
+}
+
+.mood-angry {
+    background-color: var(--mood-angry);
+}
+
+/* Mood selector */
+.mood-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.mood-option {
+    margin: 0;
+    padding: 0;
+}
+
+.mood-option input[type="radio"] {
+    display: none;
+}
+
+.mood-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 85px;
+    height: 85px;
+    justify-content: center;
+}
+
+.mood-select-icon {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.mood-text {
+    font-size: 12px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.mood-option input[type="radio"]:checked + .mood-label {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+}
+
+/* Journal content */
+.journal-content {
+    background-color: var(--pastel-pink-light);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px 0;
+}
+
+.journal-content-full {
+    white-space: pre-line;
+    line-height: 1.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mood-selector {
+        justify-content: center;
+    }
+    
+    .mood-label {
+        width: 70px;
+        height: 70px;
+        padding: 10px;
+    }
+    
+    .mood-select-icon {
+        font-size: 24px;
+    }
+    
+    .mood-text {
+        font-size: 11px;
+    }
+}
+
+/* Footer */
+.footer {
+    background-color: var(--pastel-lavender-light);
+    color: var(--text-medium);
+}
+
+/* Rounded corners */
+.rounded-4 {
+    border-radius: 0.75rem !important;
+}
+
+/* Form control styling */
+.form-control {
+    background-color: var(--pastel-blue-light);
+    border: 1px solid var(--border-color);
+}
+
+.form-control:focus {
+    background-color: #fff;
+}
+
+.form-text {
+    color: var(--text-light);
+    font-size: 0.85rem;
+}
+
+/* Shadow effects */
+.shadow {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05) !important;
+}
+.dropdown-item-form {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .btn-link {
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    font-size: inherit;
+  }

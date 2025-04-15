@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Personalized Recommendations - MoodJournal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-magic me-2"></i> Personalized Recommendations</h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    Based on your recent mood entries, we've curated content to help support your emotional well-being.
+                </p>
+                
+                {% if latest_mood %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> These recommendations are tailored to your most recent mood: 
+                    <strong>{{ latest_mood.get_mood_type_display }}</strong> ({{ latest_mood.date|date:"M d, Y" }})
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i> No recent mood entries found. These are general recommendations.
+                    <a href="{% url 'create-entry' %}" class="alert-link">Log your mood</a> to get personalized content.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header">
+                <h4 class="mb-0">{{ recommendation.title }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <blockquote class="blockquote">
+                        <p class="mb-0">{{ recommendation.quote }}</p>
+                    </blockquote>
+                </div>
+                
+                <h5><i class="fas fa-music me-2"></i> Music Recommendations</h5>
+                <div class="list-group mb-4">
+                    {% for music in recommendation.music %}
+                    <a href="{{ music.url }}" target="_blank" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ music.name }}</h6>
+                            <small>Listen <i class="fas fa-external-link-alt"></i></small>
+                        </div>
+                        <small>{{ music.artist }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <h5><i class="fas fa-tasks me-2"></i> Suggested Activities</h5>
+                <ul class="list-group mb-4">
+                    {% for activity in recommendation.activities %}
+                    <li class="list-group-item">{{ activity }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Mood Insights</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if mood_type == 'happy' %}
+                    <img src="https://img.icons8.com/color/96/000000/happy.png" alt="Happy" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling happy!</h5>
+                    <p class="card-text">Enjoy this positive feeling and try to notice what contributes to your happiness.</p>
+                
+                {% elif mood_type == 'excited' %}
+                    <img src="https://img.icons8.com/color/96/000000/happy-cloud.png" alt="Excited" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling excited!</h5>
+                    <p class="card-text">Channel this energy into activities you enjoy or creative pursuits.</p>
+                
+                {% elif mood_type == 'calm' %}
+                    <img src="https://img.icons8.com/color/96/000000/relaxed.png" alt="Calm" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling calm.</h5>
+                    <p class="card-text">This is a great state for reflection, mindfulness, and deep focus.</p>
+                
+                {% elif mood_type == 'neutral' %}
+                    <img src="https://img.icons8.com/color/96/000000/neutral-emoticon.png" alt="Neutral" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling neutral.</h5>
+                    <p class="card-text">A balanced emotional state is perfect for planning and decision-making.</p>
+                
+                {% elif mood_type == 'tired' %}
+                    <img src="https://img.icons8.com/color/96/000000/sleeping.png" alt="Tired" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling tired.</h5>
+                    <p class="card-text">Listen to your body and give yourself permission to rest when needed.</p>
+                
+                {% elif mood_type == 'anxious' %}
+                    <img src="https://img.icons8.com/color/96/000000/surprised.png" alt="Anxious" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling anxious.</h5>
+                    <p class="card-text">Remember that anxiety is temporary, and breathing exercises can help calm your nervous system.</p>
+                
+                {% elif mood_type == 'sad' %}
+                    <img src="https://img.icons8.com/color/96/000000/sad.png" alt="Sad" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling sad.</h5>
+                    <p class="card-text">It's okay to feel sad. Allow yourself to experience your emotions without judgment.</p>
+                
+                {% elif mood_type == 'angry' %}
+                    <img src="https://img.icons8.com/color/96/000000/angry.png" alt="Angry" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h5 class="card-title">You're feeling angry.</h5>
+                    <p class="card-text">Try to identify the source of your anger, and find healthy ways to express and process it.</p>
+                
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Journal Prompt</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    {% if mood_type == 'happy' %}
+                        What three things contributed most to your happiness today? How can you incorporate more of these elements into your daily life?
+                    
+                    {% elif mood_type == 'excited' %}
+                        What are you most excited about right now? How can you channel this energy productively?
+                    
+                    {% elif mood_type == 'calm' %}
+                        What practices help you maintain this sense of calm? How does being calm affect your decision-making?
+                    
+                    {% elif mood_type == 'neutral' %}
+                        What would elevate your mood today? What are you grateful for despite feeling neutral?
+                    
+                    {% elif mood_type == 'tired' %}
+                        What might be causing your fatigue? What small steps could you take to increase your energy?
+                    
+                    {% elif mood_type == 'anxious' %}
+                        What specific worries are on your mind? Try writing them down and asking yourself: "What's the worst that could happen? How likely is that? What would I do if it did happen?"
+                    
+                    {% elif mood_type == 'sad' %}
+                        What are you feeling sad about? What would comfort you right now?
+                    
+                    {% elif mood_type == 'angry' %}
+                        What triggered your anger? What boundaries may need to be established or reinforced?
+                    
+                    {% endif %}
+                </p>
+                <div class="text-center mt-3">
+                    <a href="{% url 'create-entry' %}" class="btn btn-primary">
+                        <i class="fas fa-pen me-2"></i> Write in Journal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-3 mb-5">
+    <a href="{% url 'mood-analytics' %}" class="btn btn-lg btn-outline-primary">
+        <i class="fas fa-chart-line me-2"></i> View Your Mood Analytics
+    </a>
+</div>
+{% endblock %}

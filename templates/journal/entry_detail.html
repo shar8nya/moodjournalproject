@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ journal_entry.title }} - MoodJournal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <a href="{% url 'entry-list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to All Entries
+            </a>
+            <a href="{% url 'edit-entry' journal_entry.date %}" class="btn btn-outline-primary">
+                <i class="fas fa-edit"></i> Edit Entry
+            </a>
+        </div>
+        
+        <div class="card shadow rounded-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    {% if mood %}
+                        <div class="mood-indicator mood-{{ mood.mood_type }}">
+                            <i class="mood-icon fas 
+                                {% if mood.mood_type == 'happy' %}fa-smile-beam
+                                {% elif mood.mood_type == 'excited' %}fa-grin-stars
+                                {% elif mood.mood_type == 'calm' %}fa-smile
+                                {% elif mood.mood_type == 'neutral' %}fa-meh
+                                {% elif mood.mood_type == 'tired' %}fa-tired
+                                {% elif mood.mood_type == 'anxious' %}fa-grimace
+                                {% elif mood.mood_type == 'sad' %}fa-sad-tear
+                                {% elif mood.mood_type == 'angry' %}fa-angry
+                                {% else %}fa-question
+                                {% endif %}
+                            "></i>
+                        </div>
+                    {% endif %}
+                    <div class="ms-3">
+                        <h2 class="mb-0">{{ journal_entry.title }}</h2>
+                        <div class="text-muted">
+                            {{ journal_entry.date|date:"F j, Y" }}
+                            {% if mood %}
+                                • Feeling: <strong>{{ mood.get_mood_type_display }}</strong>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="journal-content-full">
+                    {{ journal_entry.content|linebreaks }}
+                </div>
+                
+                <div class="text-muted mt-4">
+                    <small>Last updated: {{ journal_entry.updated_at|date:"F j, Y g:i A" }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block title %}Mood Analytics - MoodJournal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i> Mood Analytics</h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    Track your mood patterns over time and gain insights into your emotional well-being.
+                </p>
+                <div class="alert alert-info">
+                    <strong>Viewing data from:</strong> {{ start_date|date:"M d, Y" }} to {{ end_date|date:"M d, Y" }}
+                </div>
+                
+                <div class="btn-group mb-4" role="group">
+                    <button type="button" class="btn btn-outline-primary" id="view-week">Last Week</button>
+                    <button type="button" class="btn btn-primary" id="view-month">Last Month</button>
+                    <button type="button" class="btn btn-outline-primary" id="view-year">Last Year</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Daily Mood Tracking</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="dailyMoodChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Mood Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="moodDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Weekly Mood Averages</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="weeklyMoodChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Monthly Mood Averages</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyMoodChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Mood Insights</h5>
+            </div>
+            <div class="card-body">
+                <div id="moodInsights">
+                    <div class="alert alert-primary">
+                        <i class="fas fa-lightbulb me-2"></i> Log your moods regularly to see more detailed analytics and trends.
+                    </div>
+                    
+                    {% if latest_mood %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i> Your most recent mood was <strong>{{ latest_mood.get_mood_type_display }}</strong> on {{ latest_mood.date|date:"M d, Y" }}.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-3 mb-5">
+    <a href="{% url 'tailored-content' %}" class="btn btn-lg btn-primary">
+        <i class="fas fa-headphones me-2"></i> View Your Personalized Content Recommendations
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize the charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parse the JSON data
+        const dailyMoodData = JSON.parse('{{ daily_mood_data|escapejs }}');
+        const weeklyAvgData = JSON.parse('{{ weekly_avg_data|escapejs }}');
+        const monthlyAvgData = JSON.parse('{{ monthly_avg_data|escapejs }}');
+        const moodDistributionData = JSON.parse('{{ mood_distribution_data|escapejs }}');
+
+        // Create daily mood chart
+        const dailyCtx = document.getElementById('dailyMoodChart').getContext('2d');
+        const dailyMoodChart = new Chart(dailyCtx, {
+            type: 'bar',
+            data: dailyMoodData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 4,
+                        title: {
+                            display: true,
+                            text: 'Mood Score'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                let moodText = '';
+                                if (value >= 3.5) moodText = 'Happy/Excited';
+                                else if (value >= 2.5) moodText = 'Calm';
+                                else if (value >= 1.5) moodText = 'Neutral';
+                                else if (value >= 0.5) moodText = 'Tired/Anxious';
+                                else moodText = 'Sad/Angry';
+                                
+                                return `Mood: ${moodText} (${value})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create weekly mood chart
+        const weeklyCtx = document.getElementById('weeklyMoodChart').getContext('2d');
+        const weeklyMoodChart = new Chart(weeklyCtx, {
+            type: 'line',
+            data: weeklyAvgData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 4,
+                        title: {
+                            display: true,
+                            text: 'Average Mood Score'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create monthly mood chart
+        const monthlyCtx = document.getElementById('monthlyMoodChart').getContext('2d');
+        const monthlyMoodChart = new Chart(monthlyCtx, {
+            type: 'line',
+            data: monthlyAvgData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 4,
+                        title: {
+                            display: true,
+                            text: 'Average Mood Score'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create mood distribution pie chart
+        const pieCtx = document.getElementById('moodDistributionChart').getContext('2d');
+        const moodDistributionChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: moodDistributionData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Handle timeframe buttons
+        document.getElementById('view-week').addEventListener('click', function() {
+            updateTimeframe('week');
+            this.classList.add('btn-primary');
+            this.classList.remove('btn-outline-primary');
+            document.getElementById('view-month').classList.remove('btn-primary');
+            document.getElementById('view-month').classList.add('btn-outline-primary');
+            document.getElementById('view-year').classList.remove('btn-primary');
+            document.getElementById('view-year').classList.add('btn-outline-primary');
+        });
+
+        document.getElementById('view-month').addEventListener('click', function() {
+            updateTimeframe('month');
+            this.classList.add('btn-primary');
+            this.classList.remove('btn-outline-primary');
+            document.getElementById('view-week').classList.remove('btn-primary');
+            document.getElementById('view-week').classList.add('btn-outline-primary');
+            document.getElementById('view-year').classList.remove('btn-primary');
+            document.getElementById('view-year').classList.add('btn-outline-primary');
+        });
+
+        document.getElementById('view-year').addEventListener('click', function() {
+            updateTimeframe('year');
+            this.classList.add('btn-primary');
+            this.classList.remove('btn-outline-primary');
+            document.getElementById('view-week').classList.remove('btn-primary');
+            document.getElementById('view-week').classList.add('btn-outline-primary');
+            document.getElementById('view-month').classList.remove('btn-primary');
+            document.getElementById('view-month').classList.add('btn-outline-primary');
+        });
+
+        // Function to update the charts with new timeframe data
+        function updateTimeframe(timeframe) {
+            fetch(`/journal/api/mood-data/?timeframe=${timeframe}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update daily mood chart
+                    const newDailyData = {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Daily Mood',
+                            data: data.values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    };
+                    
+                    dailyMoodChart.data = newDailyData;
+                    dailyMoodChart.update();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}MoodJournal - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow rounded-4 mb-4">
+            <div class="card-body text-center py-4">
+                <h1 class="display-4 mb-3">Welcome to MoodJournal</h1>
+                <p class="lead">Track your mood and journal your thoughts each day</p>
+                
+                {% if not journal_entry or not mood %}
+                    <a href="{% url 'create-entry' %}" class="btn btn-primary btn-lg mt-3">Create Today's Entry</a>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <a href="{% url 'mood-analytics' %}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-chart-line"></i> View Analytics
+                    </a>
+                    <a href="{% url 'tailored-content' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-magic"></i> Personalized Content
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow rounded-4">
+                    <div class="card-header bg-transparent border-0">
+                        <h3 class="card-title mb-0">Today's Mood & Journal</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if journal_entry and mood %}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="mood-indicator mood-{{ mood.mood_type }}">
+                                    <i class="mood-icon fas 
+                                        {% if mood.mood_type == 'happy' %}fa-smile-beam
+                                        {% elif mood.mood_type == 'excited' %}fa-grin-stars
+                                        {% elif mood.mood_type == 'calm' %}fa-smile
+                                        {% elif mood.mood_type == 'neutral' %}fa-meh
+                                        {% elif mood.mood_type == 'tired' %}fa-tired
+                                        {% elif mood.mood_type == 'anxious' %}fa-grimace
+                                        {% elif mood.mood_type == 'sad' %}fa-sad-tear
+                                        {% elif mood.mood_type == 'angry' %}fa-angry
+                                        {% else %}fa-question
+                                        {% endif %}
+                                    "></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h4 class="mb-0">{{ journal_entry.title }}</h4>
+                                    <p class="text-muted">Feeling: <strong>{{ mood.get_mood_type_display }}</strong> on {{ journal_entry.date }}</p>
+                                </div>
+                            </div>
+                            <div class="journal-content">
+                                <p>{{ journal_entry.content|linebreaks }}</p>
+                            </div>
+                            <div class="text-end">
+                                <a href="{% url 'edit-entry' journal_entry.date %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-book fa-3x mb-3 text-muted"></i>
+                                <h4>No Entry For Today</h4>
+                                <p class="mb-4">Record how you're feeling today and write down your thoughts.</p>
+                                <a href="{% url 'create-entry' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Create Today's Entry
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if recent_entries %}
+            <div class="card shadow rounded-4">
+                <div class="card-header bg-transparent border-0">
+                    <h3 class="card-title mb-0">Recent Entries</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for entry in recent_entries %}
+                            {% if entry.date != today %}
+                                <a href="{% url 'entry-detail' entry.date %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">{{ entry.title }}</h5>
+                                        <small class="text-muted">{{ entry.date }}</small>
+                                    </div>
+                                    {% with mood=entry.get_mood %}
+                                        {% if mood %}
+                                            <div class="mood-indicator-sm mood-{{ mood.mood_type }}">
+                                                <i class="mood-icon-sm fas 
+                                                    {% if mood.mood_type == 'happy' %}fa-smile-beam
+                                                    {% elif mood.mood_type == 'excited' %}fa-grin-stars
+                                                    {% elif mood.mood_type == 'calm' %}fa-smile
+                                                    {% elif mood.mood_type == 'neutral' %}fa-meh
+                                                    {% elif mood.mood_type == 'tired' %}fa-tired
+                                                    {% elif mood.mood_type == 'anxious' %}fa-grimace
+                                                    {% elif mood.mood_type == 'sad' %}fa-sad-tear
+                                                    {% elif mood.mood_type == 'angry' %}fa-angry
+                                                    {% else %}fa-question
+                                                    {% endif %}
+                                                "></i>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'entry-list' %}" class="btn btn-outline-primary">View All Entries</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
